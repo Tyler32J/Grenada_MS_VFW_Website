@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import logo from "../../assets/vfw_icon.png";
+import logo from "../../assets/VFW_Icon.png";
 
 function Footer() {
     return (

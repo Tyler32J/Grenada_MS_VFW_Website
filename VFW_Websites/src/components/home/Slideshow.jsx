@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
 import Flag from "../../assets/home/american_flag.jpg";
-import vfw3 from "../../assets/home/VFW_3.jpg";
+import vfw3 from "../../assets/home/vfw_3.jpg";
 import vfw2 from "../../assets/home/vfw_2.webp";
 
 // TODO: replace captions with real event details once the photo gallery is connected.
