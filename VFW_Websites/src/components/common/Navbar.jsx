@@ -70,9 +70,11 @@ function Navbar() {
                         Contact
                     </NavLink>
 
+                    {/* Admin isn't linked publicly; admins sign in at /admin.
                     <NavLink to="/admin" className={linkClass}>
                         Admin
                     </NavLink>
+                    */}
                 </div>
 
                 {/* Mobile Button */}
@@ -134,6 +136,7 @@ function Navbar() {
                         Contact
                     </NavLink>
 
+                    {/* Admin isn't linked publicly; admins sign in at /admin.
                     <NavLink
                         to="/admin"
                         className={linkClass}
@@ -141,6 +144,7 @@ function Navbar() {
                     >
                         Admin
                     </NavLink>
+                    */}
                 </div>
             </div>
         </nav>

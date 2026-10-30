@@ -1,51 +1,24 @@
 import { Mail, Phone, MapPin, Award } from "lucide-react";
 import Flag from "../assets/home/american_flag.jpg";
 import Flag2 from "../assets/home/american_flag_2.jpg";
-
-// TODO: replace with real leadership data once it can be managed from the Admin Dashboard.
-const leadershipTeam = [
-    {
-        id: 1,
-        name: "John Anderson",
-        position: "Commander",
-        rank: "SGT",
-        email: "j.anderson@email.com",
-        phone: "(662) 226-1234",
-    },
-    {
-        id: 2,
-        name: "Robert Williams",
-        position: "Senior Vice Commander",
-        rank: "CPL",
-        email: "r.williams@email.com",
-        phone: "(662) 226-2345",
-    },
-    {
-        id: 3,
-        name: "Michael Davis",
-        position: "Junior Vice Commander",
-        rank: "PFC",
-        email: "m.davis@email.com",
-        phone: "(662) 226-3456",
-    },
-    {
-        id: 4,
-        name: "James Thompson",
-        position: "Quartermaster",
-        rank: "SPC",
-        email: "j.thompson@email.com",
-        phone: "(662) 226-4567",
-    },
-];
+import { useContent } from "../hooks/useContent";
+import { toParagraphs, telHref, mailtoHref } from "../utils/text";
 
 function getInitials(name) {
     return name
         .split(" ")
+        .filter(Boolean)
         .map((word) => word[0])
-        .join("");
+        .join("")
+        .slice(0, 3);
 }
 
 function Contact() {
+    const content = useContent("contact");
+    const site = useContent("site");
+    const phoneLink = telHref(site.phone);
+    const emailLink = mailtoHref(site.email);
+
     return (
         <div className="min-h-screen bg-[#F5F1E8]">
             {/* Banner */}
@@ -63,12 +36,10 @@ function Contact() {
                         className="text-4xl font-bold text-white mb-2"
                         style={{ fontFamily: "'Playfair Display', serif" }}
                     >
-                        Contact Us
+                        {content.bannerTitle}
                     </h1>
                     <div className="w-16 h-1 bg-[#D4871A] rounded mb-3" />
-                    <p className="text-[#B8C8E8] text-lg">
-                        Get in touch with our VFW leadership team
-                    </p>
+                    <p className="text-[#B8C8E8] text-lg">{content.bannerSubtitle}</p>
                 </div>
                 <div className="absolute bottom-0 left-0 right-0 h-1 bg-[#D4871A]" />
             </div>
@@ -86,11 +57,7 @@ function Contact() {
                         >
                             Visit Us
                         </h3>
-                        <p className="text-gray-600">
-                            VFW Post<br />
-                            Grenada, Mississippi<br />
-                            38901
-                        </p>
+                        <p className="text-gray-600 whitespace-pre-line">{content.address}</p>
                     </div>
 
                     <div className="bg-white rounded-lg shadow-md p-8 text-center border-t-4 border-[#0B1E4A] hover:shadow-lg transition-shadow">
@@ -105,12 +72,13 @@ function Contact() {
                         </h3>
                         <p className="text-gray-600">
                             Main Line:<br />
-                            <a
-                                href="tel:6622260000"
-                                className="text-[#D4871A] hover:underline font-semibold"
-                            >
-                                (662) 226-0000
-                            </a>
+                            {phoneLink ? (
+                                <a href={phoneLink} className="text-[#D4871A] hover:underline font-semibold">
+                                    {site.phone}
+                                </a>
+                            ) : (
+                                site.phone
+                            )}
                         </p>
                     </div>
 
@@ -126,83 +94,97 @@ function Contact() {
                         </h3>
                         <p className="text-gray-600">
                             General Inquiries:<br />
-                            <a
-                                href="mailto:info@grenadavfw.org"
-                                className="text-[#D4871A] hover:underline font-semibold"
-                            >
-                                info@grenadavfw.org
-                            </a>
+                            {emailLink ? (
+                                <a href={emailLink} className="text-[#D4871A] hover:underline font-semibold">
+                                    {site.email}
+                                </a>
+                            ) : (
+                                site.email
+                            )}
                         </p>
                     </div>
                 </div>
 
                 {/* Leadership team */}
-                <div className="mb-12">
-                    <h2
-                        className="text-3xl font-bold text-[#0B1E4A] mb-2 text-center"
-                        style={{ fontFamily: "'Playfair Display', serif" }}
-                    >
-                        Leadership Team
-                    </h2>
-                    <div className="w-16 h-1 bg-[#D4871A] mx-auto mb-8 rounded" />
+                {content.leaders.length > 0 && (
+                    <div className="mb-12">
+                        <h2
+                            className="text-3xl font-bold text-[#0B1E4A] mb-2 text-center"
+                            style={{ fontFamily: "'Playfair Display', serif" }}
+                        >
+                            {content.leadershipTitle}
+                        </h2>
+                        <div className="w-16 h-1 bg-[#D4871A] mx-auto mb-8 rounded" />
 
-                    <div className="grid md:grid-cols-2 gap-6">
-                        {leadershipTeam.map((member) => (
-                            <div
-                                key={member.id}
-                                className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow border-l-4 border-[#0B1E4A]"
-                            >
-                                <div className="flex items-start gap-4">
+                        <div className="grid md:grid-cols-2 gap-6">
+                            {content.leaders.map((member, index) => {
+                                const memberEmail = mailtoHref(member.email);
+                                const memberPhone = telHref(member.phone);
+
+                                return (
                                     <div
-                                        className="w-16 h-16 bg-gradient-to-br from-[#0B1E4A] to-[#162F5E] rounded-full flex items-center justify-center flex-shrink-0"
-                                        style={{ border: "3px solid #D4871A" }}
+                                        key={index}
+                                        className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow border-l-4 border-[#0B1E4A]"
                                     >
-                                        <span className="text-white font-bold text-xl">
-                                            {getInitials(member.name)}
-                                        </span>
-                                    </div>
-
-                                    <div className="flex-1">
-                                        <h3
-                                            className="text-xl font-bold text-[#0B1E4A] mb-1"
-                                            style={{ fontFamily: "'Playfair Display', serif" }}
-                                        >
-                                            {member.name}
-                                        </h3>
-                                        <p className="text-[#D4871A] font-semibold mb-3">
-                                            {member.position}
-                                        </p>
-
-                                        <div className="space-y-2">
-                                            <div className="flex items-center gap-2 text-gray-600">
-                                                <Award size={16} className="text-[#9B1C2E]" />
-                                                <span className="text-sm">{member.rank}</span>
+                                        <div className="flex items-start gap-4">
+                                            <div
+                                                className="w-16 h-16 bg-gradient-to-br from-[#0B1E4A] to-[#162F5E] rounded-full flex items-center justify-center flex-shrink-0"
+                                                style={{ border: "3px solid #D4871A" }}
+                                            >
+                                                <span className="text-white font-bold text-xl">
+                                                    {getInitials(member.name)}
+                                                </span>
                                             </div>
-                                            <div className="flex items-center gap-2 text-gray-600">
-                                                <Mail size={16} className="text-gray-400" />
-                                                <a
-                                                    href={`mailto:${member.email}`}
-                                                    className="text-sm hover:text-[#D4871A] transition-colors"
+
+                                            <div className="flex-1">
+                                                <h3
+                                                    className="text-xl font-bold text-[#0B1E4A] mb-1"
+                                                    style={{ fontFamily: "'Playfair Display', serif" }}
                                                 >
-                                                    {member.email}
-                                                </a>
-                                            </div>
-                                            <div className="flex items-center gap-2 text-gray-600">
-                                                <Phone size={16} className="text-gray-400" />
-                                                <a
-                                                    href={`tel:${member.phone.replace(/\D/g, "")}`}
-                                                    className="text-sm hover:text-[#D4871A] transition-colors"
-                                                >
-                                                    {member.phone}
-                                                </a>
+                                                    {member.name}
+                                                </h3>
+                                                <p className="text-[#D4871A] font-semibold mb-3">
+                                                    {member.position}
+                                                </p>
+
+                                                <div className="space-y-2">
+                                                    {member.rank && (
+                                                        <div className="flex items-center gap-2 text-gray-600">
+                                                            <Award size={16} className="text-[#9B1C2E]" />
+                                                            <span className="text-sm">{member.rank}</span>
+                                                        </div>
+                                                    )}
+                                                    {memberEmail && (
+                                                        <div className="flex items-center gap-2 text-gray-600">
+                                                            <Mail size={16} className="text-gray-400" />
+                                                            <a
+                                                                href={memberEmail}
+                                                                className="text-sm hover:text-[#D4871A] transition-colors"
+                                                            >
+                                                                {member.email}
+                                                            </a>
+                                                        </div>
+                                                    )}
+                                                    {memberPhone && (
+                                                        <div className="flex items-center gap-2 text-gray-600">
+                                                            <Phone size={16} className="text-gray-400" />
+                                                            <a
+                                                                href={memberPhone}
+                                                                className="text-sm hover:text-[#D4871A] transition-colors"
+                                                            >
+                                                                {member.phone}
+                                                            </a>
+                                                        </div>
+                                                    )}
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            </div>
-                        ))}
+                                );
+                            })}
+                        </div>
                     </div>
-                </div>
+                )}
 
                 {/* Office hours */}
                 <div className="relative rounded-lg shadow-lg overflow-hidden">
@@ -218,7 +200,7 @@ function Contact() {
                             className="text-2xl font-bold mb-1 text-center"
                             style={{ fontFamily: "'Playfair Display', serif" }}
                         >
-                            Office Hours
+                            {content.hoursTitle}
                         </h2>
                         <div className="w-12 h-1 bg-[#D4871A] mx-auto mb-6 rounded" />
 
@@ -226,33 +208,21 @@ function Contact() {
                             <div>
                                 <h3 className="font-semibold mb-3 text-[#D4871A]">Regular Hours</h3>
                                 <div className="space-y-2 text-blue-100">
-                                    <div className="flex justify-between">
-                                        <span>Monday - Thursday:</span>
-                                        <span className="font-semibold">10:00 AM - 6:00 PM</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span>Friday:</span>
-                                        <span className="font-semibold">10:00 AM - 8:00 PM</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span>Saturday:</span>
-                                        <span className="font-semibold">12:00 PM - 4:00 PM</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span>Sunday:</span>
-                                        <span className="font-semibold">Closed</span>
-                                    </div>
+                                    {content.hours.map((row, index) => (
+                                        <div key={index} className="flex justify-between gap-4">
+                                            <span>{row.days}:</span>
+                                            <span className="font-semibold text-right">{row.time}</span>
+                                        </div>
+                                    ))}
                                 </div>
                             </div>
                             <div>
-                                <h3 className="font-semibold mb-3 text-[#D4871A]">Monthly Meetings</h3>
-                                <p className="text-blue-100 mb-4">
-                                    General membership meetings are held on the third Tuesday of each
-                                    month at 6:00 PM.
-                                </p>
-                                <p className="text-blue-100">
-                                    All members are encouraged to attend. Light refreshments provided.
-                                </p>
+                                <h3 className="font-semibold mb-3 text-[#D4871A]">{content.meetingsTitle}</h3>
+                                {toParagraphs(content.meetingsText).map((paragraph, index) => (
+                                    <p key={index} className="text-blue-100 mb-4">
+                                        {paragraph}
+                                    </p>
+                                ))}
                             </div>
                         </div>
                     </div>

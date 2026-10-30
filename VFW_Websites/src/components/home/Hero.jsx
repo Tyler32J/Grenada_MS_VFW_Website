@@ -1,13 +1,20 @@
 import Flag from "../../assets/home/american_flag.jpg";
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
+import { useContent } from "../../hooks/useContent";
 
 function Hero() {
+    const content = useContent("home");
+
     return (
         <section className="relative overflow-hidden bg-[#0B1E4A]" style={{ minHeight: "520px" }}>
             {/* Flag image, positioned to cover the right half of the hero */}
             <div className="absolute right-0 top-0 bottom-0 w-1/2 overflow-hidden">
-                <img src={Flag} alt="American flag" className="w-full h-full object-cover opacity-40" />
+                <img
+                    src={content.heroImage || Flag}
+                    alt=""
+                    className="w-full h-full object-cover opacity-40"
+                />
                 <div className="absolute inset-0 bg-gradient-to-r from-[#0B1E4A] via-[#0B1E4A]/30 to-transparent" />
             </div>
 
@@ -17,20 +24,19 @@ function Hero() {
                     <div className="flex items-center gap-2 mb-5">
                         <div className="h-px w-8 bg-[#D4871A]" />
                         <span className="text-[#D4871A] text-sm font-semibold tracking-widest uppercase">
-                            Grenada, Mississippi
+                            {content.heroTagline}
                         </span>
                     </div>
 
                     <h1
-                        className="text-5xl lg:text-6xl font-bold text-white mb-5 leading-tight"
+                        className="text-5xl lg:text-6xl font-bold text-white mb-5 leading-tight whitespace-pre-line"
                         style={{ fontFamily: "'Playfair Display', serif" }}
                     >
-                        Veterans of<br />Foreign Wars
+                        {content.heroTitle}
                     </h1>
 
                     <p className="text-lg text-[#B8C8E8] mb-8 leading-relaxed">
-                        Honoring those who served, serving those who came home. A cornerstone
-                        of the Grenada community since 1945.
+                        {content.heroText}
                     </p>
 
                     <div className="flex flex-wrap gap-3">

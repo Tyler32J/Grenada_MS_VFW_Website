@@ -1,8 +1,11 @@
 import { Link } from "react-router-dom";
 import { Star } from "lucide-react";
 import Flag from "../../assets/home/american_flag_2.jpg";
+import { useContent } from "../../hooks/useContent";
 
 function CallToAction() {
+    const content = useContent("home");
+
     return (
         <section className="relative py-16 overflow-hidden">
             {/* Dark blue background with a faded flag photo */}
@@ -24,12 +27,9 @@ function CallToAction() {
                     className="text-3xl font-bold text-white mb-4"
                     style={{ fontFamily: "'Playfair Display', serif" }}
                 >
-                    Ready to Make a Difference?
+                    {content.ctaTitle}
                 </h2>
-                <p className="text-[#B8C8E8] mb-8 text-lg">
-                    Support our veterans through membership or a generous donation to the VFW
-                    Grenada Post.
-                </p>
+                <p className="text-[#B8C8E8] mb-8 text-lg">{content.ctaText}</p>
                 <div className="flex justify-center gap-4 flex-wrap">
                     <Link
                         to="/donations"

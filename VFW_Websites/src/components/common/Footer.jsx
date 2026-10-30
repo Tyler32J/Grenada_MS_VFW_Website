@@ -1,7 +1,14 @@
 import { Link } from "react-router-dom";
 import logo from "../../assets/VFW_Icon.png";
+import { useContent } from "../../hooks/useContent";
+import { safeUrl, telHref, mailtoHref } from "../../utils/text";
 
 function Footer() {
+    const site = useContent("site");
+    const mapLink = safeUrl(site.mapUrl);
+    const phoneLink = telHref(site.phone);
+    const emailLink = mailtoHref(site.email);
+
     return (
         <footer
             className="py-12 px-6 text-white border-t-4"
@@ -13,9 +20,7 @@ function Footer() {
                         <img src={logo} alt="Logo" className="h-8 w-8" />
                         VFW Grenada, MS
                     </h2>
-                    <p style={{ color: "#a2afce" }}>
-                        Supporting veterans and their families in our community since 1945.
-                    </p>
+                    <p style={{ color: "#a2afce" }}>{site.footerTagline}</p>
                 </div>
 
                 <div className="flex flex-col items-center gap-4">
@@ -26,6 +31,7 @@ function Footer() {
                     >
                         <li><Link to="/" className="text-sm text-[#a2afce] hover:text-[#c98b36] transition-colors">Home</Link></li>
                         <li><Link to="/gallery" className="text-sm text-[#a2afce] hover:text-[#c98b36] transition-colors">Gallery</Link></li>
+                        <li><Link to="/donations" className="text-sm text-[#a2afce] hover:text-[#c98b36] transition-colors">Donations</Link></li>
                         <li><Link to="/contact" className="text-sm text-[#a2afce] hover:text-[#c98b36] transition-colors">Contact</Link></li>
                         <li><Link to="/applications" className="text-sm text-[#a2afce] hover:text-[#c98b36] transition-colors">Join Us</Link></li>
                     </ul>
@@ -37,17 +43,27 @@ function Footer() {
                         className="flex flex-col items-center gap-2"
                         style={{ fontFamily: "'Source Sans 3', system-ui, sans-serif" }}
                     >
-                        <li className="text-sm text-[#a2afce] hover:text-[#c98b36] transition-colors">
-                            <a href="https://maps.app.goo.gl/C2iNEjx8fK6wDhAfA" target="_blank" rel="noopener noreferrer">
-                                Grenada, Mississippi
-                            </a>
-                        </li>
-                        <li className="text-sm text-[#a2afce] hover:text-[#c98b36] transition-colors">
-                            <a href="">Phone: (662) 226-XXXX</a>
-                        </li>
-                        <li className="text-sm text-[#a2afce] hover:text-[#c98b36] transition-colors">
-                            <a href="mailto:example@gmail.com">Email: info@grenadavfw.org</a>
-                        </li>
+                        {site.locationLabel && (
+                            <li className="text-sm text-[#a2afce] hover:text-[#c98b36] transition-colors">
+                                {mapLink ? (
+                                    <a href={mapLink} target="_blank" rel="noopener noreferrer">
+                                        {site.locationLabel}
+                                    </a>
+                                ) : (
+                                    site.locationLabel
+                                )}
+                            </li>
+                        )}
+                        {phoneLink && (
+                            <li className="text-sm text-[#a2afce] hover:text-[#c98b36] transition-colors">
+                                <a href={phoneLink}>Phone: {site.phone}</a>
+                            </li>
+                        )}
+                        {emailLink && (
+                            <li className="text-sm text-[#a2afce] hover:text-[#c98b36] transition-colors">
+                                <a href={emailLink}>Email: {site.email}</a>
+                            </li>
+                        )}
                     </ul>
                 </div>
             </div>

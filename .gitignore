@@ -3,3 +3,10 @@ VFW_Websites/node_modules/
 
 
 VFW_Websites/dist/
+
+# Local secrets
+.env
+.env.local
+.env.*.local
+**/.env
+**/.env.local

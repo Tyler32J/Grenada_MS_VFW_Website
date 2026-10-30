@@ -1,21 +1,23 @@
 import { Calendar, Clock, Star } from "lucide-react";
+import { useContent } from "../../hooks/useContent";
+import { useEvents } from "../../hooks/useEvents";
 
-// TODO: replace with real events once event data is connected (see hooks/useEvents.js).
-const events = [];
+// Event dates are stored as "YYYY-MM-DD". Parsing that directly treats it as UTC,
+// which shows the previous day in US time zones, so parse it as a local date.
+function parseEventDate(dateString) {
+    return new Date(`${dateString}T00:00:00`);
+}
 
 function formatEventDay(dateString) {
-    const date = new Date(dateString);
-    return date.getDate();
+    return parseEventDate(dateString).getDate();
 }
 
 function formatEventMonth(dateString) {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", { month: "short" });
+    return parseEventDate(dateString).toLocaleDateString("en-US", { month: "short" });
 }
 
 function formatFullDate(dateString) {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
+    return parseEventDate(dateString).toLocaleDateString("en-US", {
         weekday: "long",
         month: "long",
         day: "numeric",
@@ -24,6 +26,8 @@ function formatFullDate(dateString) {
 }
 
 function UpcomingEvents() {
+    const content = useContent("home");
+    const events = useEvents();
     const [featuredEvent, ...otherEvents] = events;
 
     return (
@@ -34,14 +38,14 @@ function UpcomingEvents() {
                         className="text-3xl font-bold text-[#0B1E4A]"
                         style={{ fontFamily: "'Playfair Display', serif" }}
                     >
-                        Upcoming Events
+                        {content.eventsTitle}
                     </h2>
                     <div className="w-12 h-1 bg-[#D4871A] mt-2 rounded" />
                 </div>
 
                 {events.length === 0 ? (
                     <div className="text-center py-16 bg-[#F5F1E8] rounded-xl">
-                        <p className="text-gray-500 text-lg">No upcoming events scheduled at this time.</p>
+                        <p className="text-gray-500 text-lg">{content.noEventsText}</p>
                     </div>
                 ) : (
                     <div className="grid lg:grid-cols-5 gap-4">
@@ -60,19 +64,21 @@ function UpcomingEvents() {
                                 >
                                     {featuredEvent.title}
                                 </h3>
-                                <p className="text-[#B8C8E8] text-sm leading-relaxed mb-6">
+                                <p className="text-[#B8C8E8] text-sm leading-relaxed mb-6 whitespace-pre-line">
                                     {featuredEvent.description}
                                 </p>
                             </div>
                             <div className="space-y-2">
                                 <div className="flex items-center gap-2 text-[#D4C090]">
                                     <Calendar size={16} />
-                                    <span className="text-sm">{formatFullDate(featuredEvent.date)}</span>
+                                    <span className="text-sm">{formatFullDate(featuredEvent.event_date)}</span>
                                 </div>
-                                <div className="flex items-center gap-2 text-[#D4C090]">
-                                    <Clock size={16} />
-                                    <span className="text-sm">{featuredEvent.time}</span>
-                                </div>
+                                {featuredEvent.event_time && (
+                                    <div className="flex items-center gap-2 text-[#D4C090]">
+                                        <Clock size={16} />
+                                        <span className="text-sm">{featuredEvent.event_time}</span>
+                                    </div>
+                                )}
                             </div>
                         </div>
 
@@ -91,21 +97,25 @@ function UpcomingEvents() {
                                             >
                                                 {event.title}
                                             </h3>
-                                            <p className="text-gray-600 text-sm mb-2">{event.description}</p>
+                                            <p className="text-gray-600 text-sm mb-2 whitespace-pre-line">
+                                                {event.description}
+                                            </p>
                                         </div>
                                         <div className="text-right flex-shrink-0">
                                             <div className="text-[#D4871A] font-bold text-lg leading-none">
-                                                {formatEventDay(event.date)}
+                                                {formatEventDay(event.event_date)}
                                             </div>
                                             <div className="text-gray-400 text-xs">
-                                                {formatEventMonth(event.date)}
+                                                {formatEventMonth(event.event_date)}
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="flex items-center gap-1 text-sm text-gray-500">
-                                        <Clock size={13} />
-                                        <span>{event.time}</span>
-                                    </div>
+                                    {event.event_time && (
+                                        <div className="flex items-center gap-1 text-sm text-gray-500">
+                                            <Clock size={13} />
+                                            <span>{event.event_time}</span>
+                                        </div>
+                                    )}
                                 </div>
                             ))}
                         </div>
