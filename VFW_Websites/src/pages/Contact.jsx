@@ -3,6 +3,7 @@ import Flag from "../assets/home/american_flag.jpg";
 import Flag2 from "../assets/home/american_flag_2.jpg";
 import { useContent } from "../hooks/useContent";
 import { toParagraphs, telHref, mailtoHref } from "../utils/text";
+import { usePageMeta } from "../hooks/usePageMeta";
 
 function getInitials(name) {
     return name
@@ -14,6 +15,7 @@ function getInitials(name) {
 }
 
 function Contact() {
+    usePageMeta({ title: "Contact Us", path: "/contact", description: "Contact VFW Post 4488 in Grenada, Mississippi. Find our leadership team, office hours, and monthly meeting schedule." });
     const content = useContent("contact");
     const site = useContent("site");
     const phoneLink = telHref(site.phone);

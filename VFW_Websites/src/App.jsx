@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Footer from "./components/common/Footer";
@@ -6,9 +7,11 @@ import Home from "./pages/Home";
 import Gallery from "./pages/Gallery";
 import Contact from "./pages/Contact";
 import Donations from "./pages/Donations";
-import AdminDashboard from "./pages/AdminDashboard";
 import Applications from "./pages/Application";
 import { useContentReady } from "./hooks/useContent";
+
+// Loaded only when someone opens /admin, so visitors download less.
+const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
 
 function App() {
     // Wait for edited content before showing pages, so visitors never see
@@ -26,7 +29,14 @@ function App() {
                     <Route path="/donations" element={<Donations />} />
                     <Route path="/applications" element={<Applications />} />
                     {/* Not linked in the menu; admins go to /admin directly. */}
-                    <Route path="/admin" element={<AdminDashboard />} />
+                    <Route
+                        path="/admin"
+                        element={
+                            <Suspense fallback={<div className="min-h-screen bg-[#F5F1E8]" />}>
+                                <AdminDashboard />
+                            </Suspense>
+                        }
+                    />
                 </Routes>
             ) : (
                 <div className="min-h-screen bg-[#F5F1E8]" />

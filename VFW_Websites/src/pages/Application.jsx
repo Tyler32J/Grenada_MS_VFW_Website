@@ -3,6 +3,7 @@ import { Shield, CheckCircle, ChevronDown } from "lucide-react";
 import { useContent } from "../hooks/useContent";
 import { submitApplication } from "../services/api";
 import { supabase } from "../services/supabase";
+import { usePageMeta } from "../hooks/usePageMeta";
 
 // Full names for the 50 US states. Mississippi is listed first
 // since that's where this post is located.
@@ -39,6 +40,7 @@ const inputClass =
     "w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-[#D4871A] focus:outline-none";
 
 function Application() {
+    usePageMeta({ title: "Join the VFW", path: "/applications", description: "Apply to join Veterans of Foreign Wars Post 4488 in Grenada, Mississippi. See eligibility requirements and submit your membership application online." });
     const content = useContent("applications");
     const [formData, setFormData] = useState(emptyFormData);
     const [submitted, setSubmitted] = useState(false);

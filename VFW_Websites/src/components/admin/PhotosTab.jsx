@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { Trash2, Upload } from "lucide-react";
+import { ImagePlus, Trash2, Upload } from "lucide-react";
 import { addPhoto, deletePhoto, fetchPhotos, updatePhoto } from "../../services/api";
-import { cardClass, inputClass, labelClass, primaryButtonClass } from "./styles";
+import { checkImageFile } from "../../services/storage";
+import { cardClass, inputClass, labelClass, primaryButtonClass, secondaryButtonClass } from "./styles";
 
 function PhotosTab() {
     const [photos, setPhotos] = useState([]);
@@ -85,12 +86,27 @@ function PhotosTab() {
 
 function UploadForm({ onUploaded }) {
     const [file, setFile] = useState(null);
+    const [previewUrl, setPreviewUrl] = useState("");
     const [caption, setCaption] = useState("");
     const [inSlideshow, setInSlideshow] = useState(false);
     const [uploading, setUploading] = useState(false);
     const [error, setError] = useState("");
-    // Changing the key clears the file input after an upload.
-    const [inputKey, setInputKey] = useState(0);
+
+    function chooseFile(newFile) {
+        if (previewUrl) URL.revokeObjectURL(previewUrl);
+        setFile(newFile);
+        setPreviewUrl(newFile ? URL.createObjectURL(newFile) : "");
+    }
+
+    function handleFileChange(event) {
+        const chosen = event.target.files[0];
+        event.target.value = "";
+        if (!chosen) return;
+
+        const problem = checkImageFile(chosen);
+        setError(problem ?? "");
+        chooseFile(problem ? null : chosen);
+    }
 
     async function handleSubmit(event) {
         event.preventDefault();
@@ -100,10 +116,9 @@ function UploadForm({ onUploaded }) {
         setError("");
         try {
             await addPhoto(file, caption.trim(), inSlideshow);
-            setFile(null);
+            chooseFile(null);
             setCaption("");
             setInSlideshow(false);
-            setInputKey((key) => key + 1);
             await onUploaded();
         } catch (uploadError) {
             setError(uploadError.message);
@@ -121,15 +136,30 @@ function UploadForm({ onUploaded }) {
                 Upload a photo
             </h2>
             <div>
-                <label className={labelClass}>Photo * (JPG, PNG, WebP, or GIF, up to 10 MB)</label>
-                <input
-                    key={inputKey}
-                    type="file"
-                    required
-                    accept="image/jpeg,image/png,image/webp,image/gif"
-                    onChange={(event) => setFile(event.target.files[0] ?? null)}
-                    className="block text-sm"
-                />
+                <p className={labelClass}>Step 1: Choose a photo (JPG, PNG, WebP, or GIF, up to 10 MB)</p>
+                <div className="flex items-center gap-4 flex-wrap">
+                    <div className="w-40 h-28 rounded-lg bg-[#F5F1E8] border-2 border-dashed border-gray-300 overflow-hidden flex items-center justify-center text-xs text-gray-500 text-center px-2">
+                        {previewUrl ? (
+                            <img src={previewUrl} alt="Selected photo preview" className="w-full h-full object-cover" />
+                        ) : (
+                            "No photo chosen yet"
+                        )}
+                    </div>
+                    <div className="space-y-1">
+                        <label className={`${secondaryButtonClass} inline-flex items-center gap-2 cursor-pointer`}>
+                            <ImagePlus size={18} />
+                            {file ? "Choose a different photo" : "Choose photo"}
+                            <input
+                                type="file"
+                                accept="image/jpeg,image/png,image/webp,image/gif"
+                                onChange={handleFileChange}
+                                disabled={uploading}
+                                className="hidden"
+                            />
+                        </label>
+                        {file && <p className="text-xs text-gray-500 max-w-xs truncate">{file.name}</p>}
+                    </div>
+                </div>
             </div>
             <div>
                 <label className={labelClass}>Caption</label>
@@ -146,9 +176,12 @@ function UploadForm({ onUploaded }) {
                 Also show in the home page slideshow
             </label>
             {error && <p className="text-sm text-[#9B1C2E]">{error}</p>}
-            <button type="submit" disabled={uploading || !file} className={`${primaryButtonClass} inline-flex items-center gap-2`}>
-                <Upload size={18} /> {uploading ? "Uploading..." : "Upload"}
-            </button>
+            <div className="flex items-center gap-3 flex-wrap">
+                <button type="submit" disabled={uploading || !file} className={`${primaryButtonClass} inline-flex items-center gap-2`}>
+                    <Upload size={18} /> {uploading ? "Uploading..." : "Step 2: Upload"}
+                </button>
+                {!file && !uploading && <p className="text-sm text-gray-500">Choose a photo first.</p>}
+            </div>
         </form>
     );
 }

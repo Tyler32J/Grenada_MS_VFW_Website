@@ -17,10 +17,24 @@ function subscribe(listener) {
     return () => listeners.delete(listener);
 }
 
+// Some networks (e.g. government or workplace filters) silently block outside
+// services. Don't keep visitors staring at a blank page: after this long, show
+// the built-in default text instead.
+const LOAD_TIMEOUT_MS = 5000;
+
+function withTimeout(promise) {
+    return Promise.race([
+        promise,
+        new Promise((_, reject) =>
+            setTimeout(() => reject(new Error("Timed out loading content")), LOAD_TIMEOUT_MS)
+        ),
+    ]);
+}
+
 function loadContent() {
     if (store.status !== "idle") return;
     store = { ...store, status: "loading" };
-    fetchAllContent()
+    withTimeout(fetchAllContent())
         .then((saved) => setStore({ status: "ready", saved }))
         .catch((error) => {
             console.error("Couldn't load site content; showing defaults.", error);

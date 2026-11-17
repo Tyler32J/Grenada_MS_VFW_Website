@@ -3,6 +3,7 @@ import Flag from "../assets/home/vfw_3.jpg";
 import Flag2 from "../assets/home/american_flag_2.jpg";
 import { useContent } from "../hooks/useContent";
 import { mailtoHref, safeUrl, zeffyEmbedUrl } from "../utils/text";
+import { usePageMeta } from "../hooks/usePageMeta";
 
 // Icons for the "How your donation helps" items, repeated in order if there are more items.
 const helpIcons = [
@@ -12,6 +13,7 @@ const helpIcons = [
 ];
 
 function Donations() {
+    usePageMeta({ title: "Donate", path: "/donations", description: "Donate to VFW Post 4488 in Grenada, MS to support local veterans, their families, and community programs." });
     const content = useContent("donations");
     const site = useContent("site");
     const embedUrl = zeffyEmbedUrl(content.zeffyUrl);

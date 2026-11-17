@@ -6,6 +6,7 @@ import PagesTab from "../components/admin/PagesTab";
 import EventsTab from "../components/admin/EventsTab";
 import PhotosTab from "../components/admin/PhotosTab";
 import FormsTab from "../components/admin/FormsTab";
+import { usePageMeta, useNoIndex } from "../hooks/usePageMeta";
 
 // Sign-in is handled by Supabase Auth: passwords are checked and stored (hashed)
 // on Supabase's servers, never in this code. Being signed in is not enough to
@@ -25,6 +26,8 @@ const inputClass =
     "w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-[#D4871A] focus:outline-none";
 
 function AdminDashboard() {
+    usePageMeta({ title: "Admin" });
+    useNoIndex();
     // undefined = still checking for an existing session, null = signed out.
     const [session, setSession] = useState(undefined);
     const [adminCheck, setAdminCheck] = useState({ userId: null, isAdmin: false });

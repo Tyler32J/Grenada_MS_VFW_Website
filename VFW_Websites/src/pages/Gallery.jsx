@@ -2,8 +2,10 @@ import { useState } from "react";
 import { Calendar, Image as ImageIcon, X } from "lucide-react";
 import { useContent } from "../hooks/useContent";
 import { usePhotos } from "../hooks/usePhotos";
+import { usePageMeta } from "../hooks/usePageMeta";
 
 function Gallery() {
+    usePageMeta({ title: "Photo Gallery", path: "/gallery", description: "Photos from VFW Post 4488 events, ceremonies, and community activities in Grenada, Mississippi." });
     const content = useContent("gallery");
     const { photos, loading } = usePhotos();
     const [selectedPhoto, setSelectedPhoto] = useState(null);

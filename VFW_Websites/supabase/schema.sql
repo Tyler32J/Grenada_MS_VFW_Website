@@ -18,19 +18,26 @@ create table if not exists public.admins (
     created_at timestamptz not null default now()
 );
 alter table public.admins enable row level security;
--- No policies on admins: nobody can read or change this table through the API.
--- Admins are added only from the SQL Editor (see the bottom of this file).
+-- Signed-in users can see only their own row (i.e. whether they are an admin).
+-- Nobody can add, change, or remove admins through the API; that's done only
+-- from the SQL Editor (see the bottom of this file).
+drop policy if exists "Users can see their own admin row" on public.admins;
+create policy "Users can see their own admin row" on public.admins
+    for select to authenticated using (user_id = (select auth.uid()));
 
--- Returns true when the signed-in user is on the admin list.
+-- Returns true when the signed-in user is on the admin list. Runs with the
+-- caller's own permissions (security invoker), and logged-out visitors can't call it.
 create or replace function public.is_admin()
 returns boolean
 language sql
 stable
-security definer
+security invoker
 set search_path = ''
 as $$
-    select exists (select 1 from public.admins where user_id = auth.uid());
+    select exists (select 1 from public.admins where user_id = (select auth.uid()));
 $$;
+revoke execute on function public.is_admin() from public, anon;
+grant execute on function public.is_admin() to authenticated;
 
 
 -- ---------------------------------------------------------------------------
